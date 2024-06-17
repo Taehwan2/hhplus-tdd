@@ -109,7 +109,7 @@ class PointServiceTest {
 
     @Test
     @DisplayName("6. 실제 Service use 기능을 테스트")
-    void useTest(){
+    void useTest() throws IllegalAccessException {
         // Todo 특정 아이디를 통해 UserPoint를 가진 객체를 불러와야한다.
         Long id = 1L;
         Long amount = 1000L;
@@ -125,6 +125,28 @@ class PointServiceTest {
 
         assertThat(resultPoint.point()).isEqualTo(updatedUserPoint.point());
         assertThat(resultPoint.point()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("8. 잔액이 minus 일때 예외처리 가 가능한지 테스트 - 예외 실패 테스트")
+    void use2Test(){
+        // Todo 특정 아이디를 통해 UserPoint를 가진 객체를 불러와야한다.
+        Long id = 1L;
+        Long amount = 2000L;
+
+        var userPoint = new UserPoint(id,1000,1000);
+        given(userPointTable.selectById(id)).willReturn(userPoint);
+
+        var updatedUserPoint = new UserPoint(id, amount - userPoint.point(), System.currentTimeMillis());
+    /*    given(userPointTable.insertOrUpdate(id,amount)).willReturn(updatedUserPoint);*/
+        // Todo pointServie에 getPoint는 new UserPoint(id,1000,1000);를 반환하는 코드만 작성
+
+        //TODO Exception 은 추후에 추가 예정
+        assertThrows(IllegalArgumentException.class, () -> {
+            pointService.use(id, amount); // 예외가 발생해야 하는 부분
+        }, "잔액이 부족할 때 IllegalArgumentException 예외를 던져야 함");
+
+
     }
 
 
