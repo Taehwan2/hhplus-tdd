@@ -29,4 +29,12 @@ public class PointService {
 
         return userPointTable.insertOrUpdate(id,amount);
     }
+
+    public UserPoint use(Long id, Long amount) {
+        var userPoint = getPoint(id);
+
+        var result = userPoint.point() - amount;
+
+        return userPointTable.insertOrUpdate(id,amount);
+    }
 }

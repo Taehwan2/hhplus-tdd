@@ -97,13 +97,34 @@ class PointServiceTest {
         var userPoint = new UserPoint(id,1000,1000);
         given(userPointTable.selectById(id)).willReturn(userPoint);
 
-        var updatedUserPoint = new UserPoint(id, amount+1000, System.currentTimeMillis());
+        var updatedUserPoint = new UserPoint(id, amount+userPoint.point(), System.currentTimeMillis());
         given(userPointTable.insertOrUpdate(id,amount)).willReturn(updatedUserPoint);
         // Todo pointServie에 getPoint는 new UserPoint(id,1000,1000);를 반환하는 코드만 작성
 
         var resultPoint = pointService.charge(id,1000L);
 
-        assertThat(resultPoint.point()).isEqualTo(2000);
+        assertThat(resultPoint.point()).isEqualTo(updatedUserPoint.point());
+    }
+
+
+    @Test
+    @DisplayName("6. 실제 Service use 기능을 테스트")
+    void useTest(){
+        // Todo 특정 아이디를 통해 UserPoint를 가진 객체를 불러와야한다.
+        Long id = 1L;
+        Long amount = 1000L;
+
+        var userPoint = new UserPoint(id,1000,1000);
+        given(userPointTable.selectById(id)).willReturn(userPoint);
+
+        var updatedUserPoint = new UserPoint(id, amount - userPoint.point(), System.currentTimeMillis());
+        given(userPointTable.insertOrUpdate(id,amount)).willReturn(updatedUserPoint);
+        // Todo pointServie에 getPoint는 new UserPoint(id,1000,1000);를 반환하는 코드만 작성
+
+        var resultPoint = pointService.use(id,1000L);
+
+        assertThat(resultPoint.point()).isEqualTo(updatedUserPoint.point());
+        assertThat(resultPoint.point()).isEqualTo(0);
     }
 
 
