@@ -1,5 +1,6 @@
 package io.hhplus.tdd.point;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -8,10 +9,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/point")
+@RequiredArgsConstructor
 public class PointController {
 
     private static final Logger log = LoggerFactory.getLogger(PointController.class);
 
+    private final PointUserService pointUserService;
+
+    private final PointService pointService;
+
+    private final PointHistoryService pointHistoryService;
     /**
      * TODO - 특정 유저의 포인트를 조회하는 기능을 작성해주세요.
      */
@@ -19,7 +26,7 @@ public class PointController {
     public UserPoint point(
             @PathVariable long id
     ) {
-        return new UserPoint(0, 0, 0);
+        return pointService.getPoint(id);
     }
 
     /**
@@ -29,7 +36,7 @@ public class PointController {
     public List<PointHistory> history(
             @PathVariable long id
     ) {
-        return List.of();
+        return pointHistoryService.getHistoryPoint(id);
     }
 
     /**
@@ -38,9 +45,9 @@ public class PointController {
     @PatchMapping("{id}/charge")
     public UserPoint charge(
             @PathVariable long id,
-            @RequestBody long amount
+            @RequestBody AmountRequest amount
     ) {
-        return new UserPoint(0, 0, 0);
+        return pointUserService.charge(id,amount.getAmount(),TransactionType.CHARGE,1000L);
     }
 
     /**
@@ -49,8 +56,21 @@ public class PointController {
     @PatchMapping("{id}/use")
     public UserPoint use(
             @PathVariable long id,
-            @RequestBody long amount
-    ) {
-        return new UserPoint(0, 0, 0);
+            @RequestBody AmountRequest amount
+    ) throws IllegalAccessException {
+        return pointUserService.use(id,amount.getAmount(),TransactionType.CHARGE,1000L);
+    }
+}
+
+class AmountRequest {
+    private long amount;
+
+    // Getter and Setter
+    public long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(long amount) {
+        this.amount = amount;
     }
 }

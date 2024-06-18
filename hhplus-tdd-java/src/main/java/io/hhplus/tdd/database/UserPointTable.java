@@ -20,7 +20,7 @@ public class UserPointTable {
         return table.getOrDefault(id, UserPoint.empty(id));
     }
 
-    public UserPoint insertOrUpdate(long id, long amount) {
+    public synchronized   UserPoint insertOrUpdate(long id, long amount) {
         throttle(300);
         UserPoint userPoint = new UserPoint(id, amount, System.currentTimeMillis());
         table.put(id, userPoint);

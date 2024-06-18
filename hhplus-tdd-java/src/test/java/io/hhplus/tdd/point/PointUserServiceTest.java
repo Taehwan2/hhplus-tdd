@@ -61,7 +61,8 @@ class PointUserServiceTest {
 
         var userPoint = UserPoint.empty(1L);
         var pointHistory = new PointHistory(id,userId,amount,type,updateMills);
-
+        //Todo pointservice와 pointHistory각각 기능이 둘다 필요하기 때문에 새로운 서비스를 만들어서 검증
+        //Todo 두가지의 실행이 필요해서 추가
         given(pointService.charge(1L,1000L)).willReturn(userPoint);
         given(pointHistoryService.insertHistoryPoint(1L,1000L,TransactionType.CHARGE,1000L)).willReturn(pointHistory);
 
@@ -85,10 +86,13 @@ class PointUserServiceTest {
         var userPoint = UserPoint.empty(1L);
         var pointHistory = new PointHistory(id,userId,amount,type,updateMills);
 
+        //Todo pointservice와 pointHistory각각 기능이 둘다 필요하기 때문에 새로운 서비스를 만들어서 검증
+        //Todo 두가지의 실행이 필요해서 추가
+        //Todo 여기또한 마찬가지로 실제 use를 통해서 amount가 minus 되어서 반환하는 지는 확인할 수 없는 테스트 코드
         given(pointService.use(1L,1000L)).willReturn(userPoint);
         given(pointHistoryService.insertHistoryPoint(1L,1000L,TransactionType.USE,1000L)).willReturn(pointHistory);
 
-        UserPoint userPointResult = pointUserService.save(id,amount,type,updateMills);
+        UserPoint userPointResult = pointUserService.use(id,amount,type,updateMills);
         assertThat(userPointResult.id()).isEqualTo(1L);
     }
 
