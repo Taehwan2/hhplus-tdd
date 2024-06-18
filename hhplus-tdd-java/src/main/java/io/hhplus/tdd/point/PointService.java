@@ -29,4 +29,15 @@ public class PointService {
 
         return userPointTable.insertOrUpdate(id,amount);
     }
+
+
+    public UserPoint use(Long id, Long amount) throws IllegalAccessException {
+        var userPoint = getPoint(id);
+
+        var result = userPoint.point() - amount;
+        if(result < 0){
+            throw new IllegalArgumentException("잔액이 부족할 때 IllegalArgumentException 예외를 던져야 함");
+        }
+        return userPointTable.insertOrUpdate(id,amount);
+    }
 }
