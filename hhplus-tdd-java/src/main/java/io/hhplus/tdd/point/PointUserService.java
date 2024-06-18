@@ -16,7 +16,7 @@ public class PointUserService {
         return userPoint;
     }
 
-    public UserPoint save(Long id, Long amount, TransactionType type, Long updateMills) throws IllegalAccessException {
+    public UserPoint use(Long id, Long amount, TransactionType type, Long updateMills) throws IllegalAccessException {
         UserPoint userPoint = pointService.use(id,amount);
         pointHistoryService.insertHistoryPoint(id,amount,type,updateMills);
         return userPoint;

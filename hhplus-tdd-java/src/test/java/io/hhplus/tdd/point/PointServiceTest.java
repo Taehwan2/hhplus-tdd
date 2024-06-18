@@ -95,9 +95,19 @@ class PointServiceTest {
         Long amount = 1000L;
 
         var userPoint = new UserPoint(id,1000,1000);
+        // Todo 특정 아이디를 통해 UserPoint를 가져왔다고 예측
         given(userPointTable.selectById(id)).willReturn(userPoint);
 
         var updatedUserPoint = new UserPoint(id, amount+userPoint.point(), System.currentTimeMillis());
+
+        /*  PointService.charge 코드
+            1. var userPoint = getPoint(id);
+            //Todo 이부분이 제대로 실행되는 지 테스트 케이스로 알수 없음??
+            2. var result = userPoint.point() + amount;
+            3. return userPointTable.insertOrUpdate(id,result);
+             TODO 테스트를 보면 getPoint()를 Mock으로 해결하고 insertOrUpdate도 Mock으로 예상값을 반환하기때문에 2부분을 검증하는 방법을 모름?
+         */
+
         given(userPointTable.insertOrUpdate(id,amount)).willReturn(updatedUserPoint);
         // Todo pointServie에 getPoint는 new UserPoint(id,1000,1000);를 반환하는 코드만 작성
 
@@ -118,9 +128,13 @@ class PointServiceTest {
         given(userPointTable.selectById(id)).willReturn(userPoint);
 
         var updatedUserPoint = new UserPoint(id, amount - userPoint.point(), System.currentTimeMillis());
+
+        // Todo 특정 아이디를 통해 UserPoint를 가져왔다고 예측
         given(userPointTable.insertOrUpdate(id,amount)).willReturn(updatedUserPoint);
         // Todo pointServie에 getPoint는 new UserPoint(id,1000,1000);를 반환하는 코드만 작성
 
+
+        // TODO 테스트를 보면 getPoint()를 Mock으로 해결하고 insertOrUpdate도 Mock으로 예상값을 반환하기때문에 2부분을 검증하는 방법을 모름?
         var resultPoint = pointService.use(id,1000L);
 
         assertThat(resultPoint.point()).isEqualTo(updatedUserPoint.point());

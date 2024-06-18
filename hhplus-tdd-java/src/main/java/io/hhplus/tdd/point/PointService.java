@@ -27,7 +27,7 @@ public class PointService {
         //Todo 이부분이 제대로 실행되는 지 테스트 케이스로 알수 없음??
         var result = userPoint.point() + amount;
 
-        return userPointTable.insertOrUpdate(id,amount);
+        return userPointTable.insertOrUpdate(id,result);
     }
 
 
@@ -38,6 +38,6 @@ public class PointService {
         if(result < 0){
             throw new IllegalArgumentException("잔액이 부족할 때 IllegalArgumentException 예외를 던져야 함");
         }
-        return userPointTable.insertOrUpdate(id,amount);
+        return userPointTable.insertOrUpdate(id,result);
     }
 }

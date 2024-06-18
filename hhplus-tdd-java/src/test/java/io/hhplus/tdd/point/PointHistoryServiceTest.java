@@ -26,6 +26,7 @@ class PointHistoryServiceTest {
     @Test
     @DisplayName("1 pointHistoryService GET하기 null반환")
     public void getHistoryTest(){
+        /*TODO 실제 Service를 구현하기전에 가장 기본적인 기능 반환하는 테스트 */
         List<PointHistory> pointHistory = pointHistoryService.getHistoryPoint(1L);
         assertThat(pointHistory.get(0).id()).isEqualTo(1L);
     }
@@ -33,6 +34,7 @@ class PointHistoryServiceTest {
     @Test
     @DisplayName("2 pointHistoryService GET하기 동일한 리스트 반환")
     /*Todo 실제 Repository를 연동하면 실패하는 코드인데 남겨두는 것이 과연 좋은 것일까 의문 */
+    /*TODO 가짜 객체 만들어서 가짜 객체로 넘겨주는 테스트*/
     public void getHistoryTest2(){
         var pointHistory1 = new PointHistory(1L,1L,1000,TransactionType.USE,1000);
         var pointHistory2 = new PointHistory(2L,1L,1000,TransactionType.USE,1000);
@@ -47,6 +49,7 @@ class PointHistoryServiceTest {
     @DisplayName("3 pointHistoryService GET하기 Repository 추가 반환")
 
     public void getHistoryTest3(){
+        //TODO 예상값을 두고 반환하는 값을 예측하는 코드
         var pointHistory1 = new PointHistory(1L,1L,1000,TransactionType.USE,1000);
         var pointHistory2 = new PointHistory(2L,1L,1000,TransactionType.USE,1000);
         var pointHistoryList = List.of(pointHistory1,pointHistory2);
@@ -83,7 +86,8 @@ class PointHistoryServiceTest {
         Long updateMills = 1000L;
 
         var pointHistory = new PointHistory(id,userId,amount,type,updateMills);
-
+        //TODO 요구사항에서 insert를 치면 pointHistory를 반환하기 때문에 Mock 객체를 통해서
+        //Todo 예상값으로 검증 Charge or USE 를 구별해야한다. 이 두경우에 History도 저장되어야하기 때문에 개별기능으로 우선 TDD 구현
         given(pointHistoryTable.insert(userId,amount,type,updateMills)).willReturn(pointHistory);
 
         PointHistory pointHistoryResult = pointHistoryService.insertHistoryPoint(userId,amount,type,updateMills);

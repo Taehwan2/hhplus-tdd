@@ -21,6 +21,7 @@ class UserPointTableTest {
     @Test
     @BeforeEach
     public void InsertTest(){
+        /*Todo 이미 구현 되어있는 기능 insert 검증 */
         UserPoint userPoint = userPointTable.insertOrUpdate(2L,1000);
     }
 
