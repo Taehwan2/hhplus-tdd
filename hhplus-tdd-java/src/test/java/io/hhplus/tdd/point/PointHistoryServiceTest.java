@@ -54,6 +54,7 @@ class PointHistoryServiceTest {
         var pointHistory2 = new PointHistory(2L,1L,1000,TransactionType.USE,1000);
         var pointHistoryList = List.of(pointHistory1,pointHistory2);
 
+        //Todo Table이 반환했다는 가정하에 pointHistoryService가 잘 작동하는 지 하는 테스트
         given(pointHistoryTable.selectAllByUserId(1L)).willReturn(pointHistoryList);
 
         List<PointHistory> pointHistory = pointHistoryService.getHistoryPoint(1L);
@@ -85,9 +86,10 @@ class PointHistoryServiceTest {
         TransactionType type = TransactionType.USE;
         Long updateMills = 1000L;
 
-        var pointHistory = new PointHistory(id,userId,amount,type,updateMills);
         //TODO 요구사항에서 insert를 치면 pointHistory를 반환하기 때문에 Mock 객체를 통해서
         //Todo 예상값으로 검증 Charge or USE 를 구별해야한다. 이 두경우에 History도 저장되어야하기 때문에 개별기능으로 우선 TDD 구현
+        var pointHistory = new PointHistory(id,userId,amount,type,updateMills);
+
         given(pointHistoryTable.insert(userId,amount,type,updateMills)).willReturn(pointHistory);
 
         PointHistory pointHistoryResult = pointHistoryService.insertHistoryPoint(userId,amount,type,updateMills);

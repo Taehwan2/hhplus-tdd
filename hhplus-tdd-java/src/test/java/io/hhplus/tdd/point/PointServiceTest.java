@@ -16,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -58,14 +60,34 @@ class PointServiceTest {
     @DisplayName("3. 실제 Service getPoint 기능을 테스트")
     void pointTest3(){
         // Todo 특정 아이디를 통해 UserPoint를 가진 객체를 불러와야한다.
-        Long id = 1L;
-        var userPoint = new UserPoint(id,1000,1000);
-        given(userPointTable.selectById(id)).willReturn(userPoint);
+        // Todo main 기능인 getPoint 기능을 검증하기 위한 코드
+        Long userId = 1L;
+        var userPoint = new UserPoint(userId,1000,1000);
+
+        //Todo 실제 Service 상황에서 userPoint가 결과값을 반환한다고 가정
+        given(userPointTable.selectById(userId)).willReturn(userPoint);
 
         // Todo pointServie에 getPoint는 new UserPoint(id,1000,1000);를 반환하는 코드만 작성
-        var resultPoint = pointService.getPoint(id);
+        var resultPoint = pointService.getPoint(userId);
 
+        //Todo 예측값이 같은 지 확인.
         assertThat(resultPoint.point()).isEqualTo(1000);
+        assertThat(resultPoint.id()).isEqualTo(userId);
+    }
+    @Test
+    @DisplayName(" use 계산 로직 기능을 테스트")
+    //Todo Mock 객체를 사용하기 때문에 service 안의 기능을 검증할 수 없는 부분이라 메서드로 따로 분리하여 테스트
+    void useCalculateTest(){
+       Long result = pointService.useCalculate(1000L,3000L);
+       assertThat(result).isEqualTo(-2000L);
+
+    }
+    @Test
+    @DisplayName(" charge 계산 로직 기능을 테스트")
+        //Todo Mock 객체를 사용하기 때문에 service 안의 기능을 검증할 수 없는 부분이라 메서드로 따로 분리하여 테스트
+    void chargeCalculateTest(){
+        Long result = pointService.chargeCalculate(1000L,3000L);
+        assertThat(result).isEqualTo(4000L);
     }
 
     @Test
@@ -92,14 +114,16 @@ class PointServiceTest {
     @DisplayName("5. 실제 Service charge 기능을 테스트")
     void chargeTest2(){
         // Todo 특정 아이디를 통해 UserPoint를 가진 객체를 불러와야한다.
-        Long id = 1L;
+        //Todo main charge 검증
+        Long userId = 1L;
         Long amount = 1000L;
 
-        var userPoint = new UserPoint(id,1000,1000);
+        var userPoint = new UserPoint(userId,1000L,1000L);
         // Todo 특정 아이디를 통해 UserPoint를 가져왔다고 예측
-        given(userPointTable.selectById(id)).willReturn(userPoint);
+        given(userPointTable.selectById(userId)).willReturn(userPoint);
 
-        var updatedUserPoint = new UserPoint(id, amount+userPoint.point(), System.currentTimeMillis());
+        Long result = amount + userPoint.point();
+        var updatedUserPoint = new UserPoint(userId, result, System.currentTimeMillis());
 
         /*  PointService.charge 코드
             1. var userPoint = getPoint(id);
@@ -109,12 +133,16 @@ class PointServiceTest {
              TODO 테스트를 보면 getPoint()를 Mock으로 해결하고 insertOrUpdate도 Mock으로 예상값을 반환하기때문에 2부분을 검증하는 방법을 모름?
          */
 
-        given(userPointTable.insertOrUpdate(id,amount)).willReturn(updatedUserPoint);
+        given(userPointTable.insertOrUpdate(userId,result)).willReturn(updatedUserPoint);
         // Todo pointServie에 getPoint는 new UserPoint(id,1000,1000);를 반환하는 코드만 작성
 
-        var resultPoint = pointService.charge(id,1000L);
+        var resultPoint = pointService.charge(userId,amount);
 
         assertThat(resultPoint.point()).isEqualTo(updatedUserPoint.point());
+        assertThat(resultPoint.point()).isEqualTo(updatedUserPoint.point());
+        verify(userPointTable, times(1)).selectById(userId);  // getPoint(id) 호출 검증
+        verify(userPointTable, times(1)).insertOrUpdate(userId, result); //
+
     }
 
 
@@ -122,43 +150,49 @@ class PointServiceTest {
     @DisplayName("6. 실제 Service use 기능을 테스트")
     void useTest() throws IllegalAccessException {
         // Todo 특정 아이디를 통해 UserPoint를 가진 객체를 불러와야한다.
-        Long id = 1L;
+        Long userId = 1L;
         Long amount = 1000L;
 
-        var userPoint = new UserPoint(id,1000,1000);
-        given(userPointTable.selectById(id)).willReturn(userPoint);
+        var userPoint = new UserPoint(userId,1000L,1000L);
+        given(userPointTable.selectById(userId)).willReturn(userPoint);
 
-        var updatedUserPoint = new UserPoint(id, amount - userPoint.point(), System.currentTimeMillis());
+        Long result = userPoint.point() - amount;
+
+        var updatedUserPoint = new UserPoint(userId, result, System.currentTimeMillis());
 
         // Todo 특정 아이디를 통해 UserPoint를 가져왔다고 예측
-        given(userPointTable.insertOrUpdate(id,amount)).willReturn(updatedUserPoint);
+        given(userPointTable.insertOrUpdate(userId,result)).willReturn(updatedUserPoint);
         // Todo pointServie에 getPoint는 new UserPoint(id,1000,1000);를 반환하는 코드만 작성
 
 
         // TODO 테스트를 보면 getPoint()를 Mock으로 해결하고 insertOrUpdate도 Mock으로 예상값을 반환하기때문에 2부분을 검증하는 방법을 모름?
-        var resultPoint = pointService.use(id,1000L);
+        var resultPoint = pointService.use(userId,1000L);
 
         assertThat(resultPoint.point()).isEqualTo(updatedUserPoint.point());
         assertThat(resultPoint.point()).isEqualTo(0);
+        verify(userPointTable, times(1)).selectById(userId);  // getPoint(id) 호출 검증
+        verify(userPointTable, times(1)).insertOrUpdate(userId, result);
     }
 
     @Test
     @DisplayName("8. 잔액이 minus 일때 예외처리 가 가능한지 테스트 - 예외 실패 테스트")
     void use2Test(){
         // Todo 특정 아이디를 통해 UserPoint를 가진 객체를 불러와야한다.
-        Long id = 1L;
+        //Todo 실제 minus 가 나오는 경우 예외처리를 할 수 있는 지에 대한 검증 테스트
+        Long userId = 1L;
         Long amount = 2000L;
 
-        var userPoint = new UserPoint(id,1000,1000);
-        given(userPointTable.selectById(id)).willReturn(userPoint);
+        var userPoint = new UserPoint(userId,1000,1000);
+        given(userPointTable.selectById(userId)).willReturn(userPoint);
 
-        var updatedUserPoint = new UserPoint(id, amount - userPoint.point(), System.currentTimeMillis());
+        var updatedUserPoint = new UserPoint(userId, amount - userPoint.point(), System.currentTimeMillis());
     /*    given(userPointTable.insertOrUpdate(id,amount)).willReturn(updatedUserPoint);*/
         // Todo pointServie에 getPoint는 new UserPoint(id,1000,1000);를 반환하는 코드만 작성
 
         //TODO Exception 은 추후에 추가 예정
+        //예외 검증
         assertThrows(IllegalArgumentException.class, () -> {
-            pointService.use(id, amount); // 예외가 발생해야 하는 부분
+            pointService.use(userId, amount); // 예외가 발생해야 하는 부분
         }, "잔액이 부족할 때 IllegalArgumentException 예외를 던져야 함");
 
 

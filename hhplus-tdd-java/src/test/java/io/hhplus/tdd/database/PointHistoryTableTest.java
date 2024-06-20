@@ -24,6 +24,7 @@ class PointHistoryTableTest {
     @BeforeEach
     public void InsertTest(){
         //Todo 데이터가 들어가는 지 확인하는 테스트
+        //Todo 단순 삽입 테스트
          pointHistoryTable.insert(2L,1000, TransactionType.USE,2000L);
         pointHistoryTable.insert(2L,1000, TransactionType.CHARGE,2000L);
         pointHistoryTable.insert(3L,1000, TransactionType.USE,2000L);
